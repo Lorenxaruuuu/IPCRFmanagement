@@ -3,20 +3,32 @@
 @section('header', 'Upload IPCRF')
 
 @section('content')
-<div class="max-w-3xl mx-auto" x-data="{ 
-    step: 1, 
+<div class="max-w-3xl mx-auto" x-data="{
+    step: 1,
     totalSteps: 5,
     province: '',
     municipality: '',
+    name: '',
+    evaluatedFile: null,
+    scannedFile: null,
     provinces: {{ json_encode($provinces) }},
     municipalities: [],
-    
+
     updateMunicipalities() {
         const selected = this.provinces.find(p => p.name === this.province);
         this.municipalities = selected ? selected.municipalities : [];
         this.municipality = '';
+    },
+
+    canProceed() {
+        if (this.step === 1) return this.evaluatedFile !== null;
+        if (this.step === 2) return this.province && this.municipality;
+        if (this.step === 3) return this.name.trim().length > 0;
+        if (this.step === 4) return this.scannedFile !== null;
+        return true;
     }
 }">
+
     <!-- Progress Bar -->
     <div class="mb-8">
         <div class="flex items-center justify-between mb-2">
@@ -51,7 +63,7 @@
                 </div>
 
                 <div class="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer group relative">
-                    <input type="file" name="evaluated_file" id="evaluated_file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
+                    <input type="file" name="evaluated_file" @change="evaluatedFile = $event.target.files[0]" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
                     <i data-lucide="file-text" class="w-12 h-12 text-slate-300 group-hover:text-red-500 mx-auto mb-4 transition-colors"></i>
                     <span class="block text-sm font-medium text-slate-700 mb-1">Click to upload or drag and drop</span>
                     <span class="block text-xs text-slate-400">PDF, DOCX up to 10MB</span>
@@ -103,7 +115,7 @@
 
                 <div class="max-w-md mx-auto">
                     <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-                    <input type="text" name="name" placeholder="Last Name, First Name, M.I." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all" required>
+                    <input type="text" name="name" x-model="name" placeholder="Last Name, First Name, M.I." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all" required>
                 </div>
             </div>
 
@@ -118,7 +130,7 @@
                 </div>
 
                 <div class="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center hover:border-red-400 hover:bg-red-50 transition-colors cursor-pointer group relative">
-                    <input type="file" name="scanned_file" id="scanned_file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
+                    <input type="file" name="scanned_file" @change="scannedFile = $event.target.files[0]" id="scanned_file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
                     <i data-lucide="file-text" class="w-12 h-12 text-slate-300 group-hover:text-red-500 mx-auto mb-4 transition-colors"></i>
                     <span class="block text-sm font-medium text-slate-700 mb-1">Click to upload scanned copy</span>
                     <span class="block text-xs text-slate-400">PDF, JPG, PNG up to 10MB</span>
@@ -159,25 +171,28 @@
             <button 
                 type="button"
                 x-show="step < 4"
-                @click="step++"
-                class="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg shadow-red-600/20"
+                @click="if (canProceed()) step++"
+                :disabled="!canProceed()"
+                :class="canProceed() 
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'"
+                class="px-6 py-2.5 font-medium rounded-lg transition-colors flex items-center gap-2"
             >
                 Next Step
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
             </button>
-<button 
-    x-show="step === 4"
-    @click="
-        step = 5;
-        setTimeout(() => $el.closest('form').submit(), 1000);
-    "
-    :disabled="step === 5"
-                class="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg shadow-red-600/20"
-            >
-                Submit IPCRF
-            </button>
+            <button 
+                x-show="step === 4"
+                @click="
+                    step = 5;
+                    setTimeout(() => $el.closest('form').submit(), 1000);
+                "
+                :disabled="step === 5"
+                            class="px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg shadow-red-600/20"
+                        >
+                            Submit IPCRF
+                        </button>
 
-        </div>
-    </form>
-</div>
+                    </div>
+                </form>
+            </div>
 @endsection
