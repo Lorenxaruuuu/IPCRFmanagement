@@ -11,25 +11,20 @@ class IpcrfController extends Controller
     public function index()
     {
         $totalUploaded = Ipcrf::count();
-
         $pendingReview = Ipcrf::where('status', 'Pending')->count();
-
         $completedToday = Ipcrf::whereDate('created_at', today())
             ->where('status', '!=', 'Pending')
             ->count();
 
         $recentUploads = Ipcrf::latest()->take(10)->get();
 
-        // 🔥 NEW: Calculate growth percentage (Today vs Yesterday)
+        // Growth percentage
         $todayCount = Ipcrf::whereDate('created_at', today())->count();
-
         $yesterdayCount = Ipcrf::whereDate('created_at', today()->subDay())->count();
 
-        if ($yesterdayCount > 0) {
-            $growthPercentage = (($todayCount - $yesterdayCount) / $yesterdayCount) * 100;
-        } else {
-            $growthPercentage = $todayCount > 0 ? 100 : 0;
-        }
+        $growthPercentage = $yesterdayCount > 0 
+            ? (($todayCount - $yesterdayCount) / $yesterdayCount) * 100 
+            : ($todayCount > 0 ? 100 : 0);
 
         return view('encoderDashboard', compact(
             'totalUploaded',
@@ -41,8 +36,7 @@ class IpcrfController extends Controller
     }
 
 
-
-    public function list()
+    public function showList()
     {
         $ipcrfs = Ipcrf::latest()->paginate(10);
 
@@ -87,21 +81,21 @@ class IpcrfController extends Controller
             'scanned_file' => 'required|file|mimes:pdf,jpg,png|max:10240',
         ]);
 
-        // Handle scanned upload only
-        $scannedPath = $request->file('scanned_file')->store('ipcrfs/scanned');
+        try {
+            $scannedPath = $request->file('scanned_file')->store('ipcrfs/scanned');
 
-        // Create the record
-        $ipcrf = Ipcrf::create([
-            'name' => $validated['name'],
-            'province' => $validated['province'],
-            'municipality' => $validated['municipality'],
-            'scanned_file_path' => $scannedPath,
-            'status' => 'Saved to Drive',
-        ]);
+            Ipcrf::create([
+                'name' => $validated['name'],
+                'province' => $validated['province'],
+                'municipality' => $validated['municipality'],
+                'scanned_file_path' => $scannedPath,
+                'status' => 'Saved to Drive',
+            ]);
 
-        // Simulate "Notify Admin" logic here (e.g., send email)
-        //Mail::to('lorence.maranga@hcdc.edu.ph')->send(new IpcrfUploaded($ipcrf));
-
-        return redirect()->route('dashboard')->with('success', 'IPCRF uploaded successfully and Admin notified!');
+            return redirect()->route('dashboard')->with('success', 'IPCRF uploaded successfully!');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Upload failed: ' . $e->getMessage())->withInput();
+        }
     }
 }

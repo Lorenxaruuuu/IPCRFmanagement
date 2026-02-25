@@ -55,14 +55,14 @@
                         <td class="px-6 py-4 text-slate-500">{{ $ipcrf->created_at->format('M d, Y h:i A') }}</td>
                         <td class="px-6 py-4">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium 
-                            {{ $upload->status === 'Pending' 
+                            {{ $ipcrf->status === 'Pending' 
                                 ? 'bg-orange-50 text-orange-700 border border-orange-100' 
                                 : 'bg-green-50 text-green-700 border border-green-100' }}">
                             
                             <span class="w-1.5 h-1.5 rounded-full 
-                                {{ $upload->status === 'Pending' ? 'bg-orange-600' : 'bg-green-600' }}">
+                                {{ $ipcrf->status === 'Pending' ? 'bg-orange-600' : 'bg-green-600' }}">
                             </span>
-                            {{ $upload->status }}
+                            {{ $ipcrf->status }}
                         </span>
                         </td>
                         <td class="px-6 py-4 text-right">

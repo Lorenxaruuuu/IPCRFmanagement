@@ -9,7 +9,6 @@ class Ipcrf extends Model
 {
     use HasFactory;
 
-    // Add this line to fix the table name issue
     protected $table = 'ipcrfs';
 
     protected $fillable = [
@@ -18,6 +17,6 @@ class Ipcrf extends Model
         'municipality',
         'evaluated_file_path',
         'scanned_file_path',
-        'status',
+        'status'
     ];
 }
