@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class IpcrfController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $totalUploaded = Ipcrf::count();
         $pendingReview = Ipcrf::where('status', 'Pending')->count();
@@ -16,7 +16,19 @@ class IpcrfController extends Controller
             ->where('status', '!=', 'Pending')
             ->count();
 
-        $recentUploads = Ipcrf::latest()->take(10)->get();
+        $query = Ipcrf::latest();
+        
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhere('province', 'like', $searchTerm)
+                  ->orWhere('municipality', 'like', $searchTerm)
+                  ->orWhere('id', 'like', $searchTerm);
+            });
+        }
+        
+        $recentUploads = $query->take(10)->get();
 
         // Growth percentage
         $todayCount = Ipcrf::whereDate('created_at', today())->count();
@@ -36,9 +48,24 @@ class IpcrfController extends Controller
     }
 
 
-    public function showList()
+    public function showList(Request $request)
     {
-        $ipcrfs = Ipcrf::latest()->paginate(10);
+        $query = Ipcrf::latest();
+
+        if ($request->filled('province')) {
+            $query->where('province', $request->province);
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhere('municipality', 'like', $searchTerm)
+                  ->orWhere('id', 'like', $searchTerm);
+            });
+        }
+
+        $ipcrfs = $query->paginate(10)->withQueryString();
 
         return view('index', compact('ipcrfs'));
     }
@@ -97,5 +124,21 @@ class IpcrfController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Upload failed: ' . $e->getMessage())->withInput();
         }
+    }
+    public function show($id)
+    {
+        $ipcrf = Ipcrf::findOrFail($id);
+        return view('ipcrfShow', compact('ipcrf'));
+    }
+
+    public function document($id)
+    {
+        $ipcrf = Ipcrf::findOrFail($id);
+        
+        if (!Storage::exists($ipcrf->scanned_file_path)) {
+            abort(404);
+        }
+
+        return Storage::response($ipcrf->scanned_file_path);
     }
 }

@@ -11,28 +11,28 @@
         </a>    
     </div>
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="p-4 border-b border-slate-200 flex gap-4">
+        <form method="GET" action="{{ route('ipcrf.list') }}" class="p-4 border-b border-slate-200 flex gap-4">
             <div class="relative flex-1">
                 <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
-                <input type="text" placeholder="Search records..." 
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search records... (Press Enter)" onkeydown="if(event.key === 'Enter') this.form.submit()"
                     class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
             </div>
             <div class="flex gap-2">
-                <select class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 bg-white focus:outline-none focus:border-blue-500">
+                <select name="province" onchange="this.form.submit()" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 bg-white focus:outline-none focus:border-blue-500">
                     <option value="">All Provinces</option>
-                    <option value="Davao de Oro">Davao de Oro</option>
-                    <option value="Davao del Norte">Davao del Norte</option>
-                    <option value="Davao del Sur">Davao del Sur</option>
-                    <option value="Davao Occidental">Davao Occidental</option>
-                    <option value="Davao Oriental">Davao Oriental</option>
+                    <option value="Davao de Oro" {{ request('province') == 'Davao de Oro' ? 'selected' : '' }}>Davao de Oro</option>
+                    <option value="Davao del Norte" {{ request('province') == 'Davao del Norte' ? 'selected' : '' }}>Davao del Norte</option>
+                    <option value="Davao del Sur" {{ request('province') == 'Davao del Sur' ? 'selected' : '' }}>Davao del Sur</option>
+                    <option value="Davao Occidental" {{ request('province') == 'Davao Occidental' ? 'selected' : '' }}>Davao Occidental</option>
+                    <option value="Davao Oriental" {{ request('province') == 'Davao Oriental' ? 'selected' : '' }}>Davao Oriental</option>
                 </select>
-                <button class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+                <button type="button" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-2">
                     <i data-lucide="download" class="w-4 h-4"></i>
                     Export
                 </button>
             </div>
-        </div>
+        </form>
         
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
@@ -66,9 +66,14 @@
                         </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <button class="text-slate-400 hover:text-red-600 transition-colors">
-                                <i data-lucide="more-horizontal" class="w-5 h-5"></i>
-                            </button>
+                            <div class="flex items-center justify-end gap-3">
+                                <a href="{{ route('ipcrf.show', $ipcrf->id) }}" class="text-slate-400 hover:text-blue-600 transition-colors" title="View Details">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </a>
+                                <a href="{{ route('ipcrf.document', $ipcrf->id) }}" download class="text-slate-400 hover:text-blue-600 transition-colors" title="Download Document">
+                                    <i data-lucide="download" class="w-5 h-5"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @empty

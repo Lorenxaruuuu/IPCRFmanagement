@@ -67,20 +67,23 @@
 
     <!-- Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="p-4 border-b border-slate-200 flex gap-4">
+        <form method="GET" action="{{ route('dashboard') }}" class="p-4 border-b border-slate-200 flex gap-4">
             <div class="relative flex-1">
                 <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
                 <input 
                     type="text" 
-                    placeholder="Search by name, province, or ID..." 
+                    name="search"
+                    value="{{ request('search') }}"
+                    onkeydown="if(event.key === 'Enter') this.form.submit()"
+                    placeholder="Search by name, province, or ID... (Press Enter)" 
                     class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
                 />
             </div>
-            <button class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-2">
+            <button type="button" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-2">
                 <i data-lucide="filter" class="w-4 h-4"></i>
                 Filter
             </button>
-        </div>
+        </form>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-500 font-medium">
@@ -109,8 +112,8 @@
                                 {{ $upload->status }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-right text-blue-600 hover:underline cursor-pointer">
-                            View Details
+                        <td class="px-6 py-4 text-right">
+                            <a href="{{ route('ipcrf.show', $upload->id) }}" class="text-blue-600 hover:underline cursor-pointer">View Details</a>
                         </td>
                     </tr>
                     @empty
