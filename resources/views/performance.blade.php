@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <title>DSWD - User Profile</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <title>Performance History - DSWD Purchase Request Tracking System</title>
     <style>
         * {
             margin: 0;
@@ -12,9 +12,10 @@
             box-sizing: border-box;
         }
 
+      
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8f4f8 0%, #f0e6f6 50%, #ffe6e6 100%);
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e5ed 50%, #f0e6f0 100%);
             min-height: 100vh;
             display: flex;
         }
@@ -109,224 +110,191 @@
         .main-content {
             flex: 1;
             padding: 40px;
-            overflow-y: auto;
         }
 
-        .header {
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
             margin-bottom: 30px;
+            letter-spacing: 0.5px;
         }
 
-        .header h1 {
-            font-size: 28px;
-            color: #2d3748;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .header .date {
-            font-size: 14px;
-            color: #718096;
-        }
-
-        /* Profile Card */
-        .profile-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        /* Card Container */
+        .card-container {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
+        /* Card Header with Gradient */
         .card-header {
-            height: 120px;
-            background: linear-gradient(90deg, #a8edea 0%, #fed6e3 50%, #f5f7fa 100%);
-            position: relative;
+            height: 80px;
+            background: linear-gradient(90deg, #a8d0e6 0%, #f5e6d3 100%);
         }
 
-        .profile-body {
-            padding: 0 40px 40px;
-            position: relative;
+        /* Card Body */
+        .card-body {
+            background: white;
+            padding: 30px;
         }
 
-        .profile-header {
+        /* Filter Section */
+        .filter-section {
             display: flex;
-            align-items: flex-end;
-            margin-top: -50px;
+            align-items: end;
+            gap: 20px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid white;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            background: #f0f0f0;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            margin-left: 20px;
-            margin-bottom: 10px;
-        }
-
-        .profile-info h2 {
-            font-size: 22px;
-            color: #2d3748;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .profile-info .email {
-            font-size: 14px;
-            color: #718096;
-        }
-
-        /* Form Grid */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
+        .filter-group {
             display: flex;
             flex-direction: column;
+            gap: 8px;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .form-group label {
-            font-size: 12px;
-            color: #4a5568;
-            font-weight: 500;
-            margin-bottom: 8px;
-            text-transform: capitalize;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 12px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+        .filter-select {
+            width: 160px;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             font-size: 14px;
-            color: #2d3748;
-            background: #f7fafc;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
+            color: #333;
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: #a0aec0;
-        }
-
-        /* Email Section */
-        .email-section {
-            margin-top: 20px;
-            padding-top: 30px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .email-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #f7fafc;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .email-text {
-            font-size: 14px;
-            color: #2d3748;
-        }
-
-        .email-remove {
-            font-size: 12px;
-            color: #e53e3e;
             cursor: pointer;
-            font-weight: 500;
-            transition: color 0.3s;
+            outline: none;
         }
 
-        .email-remove:hover {
-            color: #c53030;
-            text-decoration: underline;
+        .filter-select:focus {
+            border-color: #1a73e8;
         }
 
-        .btn-add-email {
+        /* Download Button */
+        .download-report-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 10px 20px;
-            background: #ebf8ff;
-            color: #3182ce;
+            background: #0a1f44;
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            text-decoration: none;
+            transition: background 0.2s;
+            height: fit-content;
         }
 
-        .btn-add-email:hover {
-            background: #bee3f8;
-            transform: translateY(-1px);
+        .download-report-btn:hover {
+            background: #1a3a6e;
         }
 
-        .btn-add-email svg {
-            width: 16px;
-            height: 16px;
+        .download-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: white;
+        }
+
+        .data-table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+            text-transform: capitalize;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .data-table tr:hover {
+            background-color: #fafafa;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* View Link */
+        .view-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #888;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-            }
-            
             .main-content {
                 padding: 20px;
             }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .profile-header {
+
+            .filter-section {
                 flex-direction: column;
-                align-items: center;
-                text-align: center;
+                align-items: stretch;
             }
-            
-            .profile-info {
-                margin-left: 0;
-                margin-top: 15px;
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 12px 16px;
             }
         }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
-    <aside class="sidebar">
-        <a href="{{ url('/home') }}" class="nav-item active"  title="Home">
+   <aside class="sidebar">
+        <a href="{{ url('/home') }}" class="nav-item "  title="Home">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
             </svg>
@@ -336,18 +304,20 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
         </a>
-           <a href="{{ url('/performance') }}" class="nav-item" title="Performance History">
+           <a href="{{ url('/performance') }}" class="nav-item active" title="Performance History">
             <!-- example chart icon representing performance -->
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l4-4 4 4 4-8"/>
             </svg>
         </a>
-        <a href="{{ url('/notifications2') }}" class="nav-item" title="Notifications" style="position:relative; text-decoration:none;">
+        <a href="{{ route('notifications.index') }}" class="nav-item" title="Notifications" style="position:relative;">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
             </svg>
+            @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
                 <span style="position:absolute; top:6px; right:6px; width:10px; height:10px; background:#ef4444; border-radius:50%; border:2px solid white;"></span>
+            @endif
         </a>
         <div class="nav-item" title="Settings">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,28 +337,34 @@
         </div>
     </aside>
 
-    <!-- Notification Dropdown (fixed, positioned by JS) -->
+    <!-- Notification Dropdown (fixed, appended to body by JS) -->
     <div id="notif-dropdown" style="display:none; position:fixed; width:300px; background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); border:1px solid #e5e7eb; overflow:hidden; z-index:99999; text-align:left;">
         <div style="padding:12px 14px; border-bottom:1px solid #e5e7eb; background:#f9fafb; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:13px; font-weight:600; color:#374151;">Announcements</span>
+            @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
                 <form action="{{ route('notifications.markAllAsRead') }}" method="POST" style="margin:0;">
                     @csrf
                     <button type="submit" style="font-size:11px; color:#2563eb; background:none; border:none; cursor:pointer;">Mark read</button>
                 </form>
+            @endif
         </div>
         <div style="max-height:320px; overflow-y:auto;">
-            <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
-                <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">System Announcement</p>
-                <p style="font-size:11px; color:#6b7280; margin:0;">New IPCRF form templates available</p>
-            </div>
-            <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
-                <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">Deadline Update</p>
-                <p style="font-size:11px; color:#6b7280; margin:0;">IPCRF submission deadline extended</p>
-            </div>
-            <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; opacity:0.6;">
-                <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">Welcome Notice</p>
-                <p style="font-size:11px; color:#6b7280; margin:0;">Welcome to DSWD IPCRF System</p>
-            </div>
+            @if(auth()->check() && auth()->user()->notifications->count() > 0)
+                @foreach(auth()->user()->unreadNotifications as $notification)
+                    <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
+                        <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">{{ $notification->data['subject'] ?? 'New Announcement' }}</p>
+                        <p style="font-size:11px; color:#6b7280; margin:0;">{{ Str::limit($notification->data['content'] ?? '', 80) }}</p>
+                    </div>
+                @endforeach
+                @foreach(auth()->user()->readNotifications->take(5) as $notification)
+                    <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; opacity:0.6;">
+                        <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">{{ $notification->data['subject'] ?? 'Announcement' }}</p>
+                        <p style="font-size:11px; color:#6b7280; margin:0;">{{ Str::limit($notification->data['content'] ?? '', 80) }}</p>
+                    </div>
+                @endforeach
+            @else
+                <div style="padding:24px; text-align:center; font-size:12px; color:#9ca3af;">No announcements yet</div>
+            @endif
         </div>
     </div>
 
@@ -421,7 +397,10 @@
             var dropdown = document.getElementById('notif-dropdown');
             var btn = document.getElementById('notif-btn');
             if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                // Move dropdown to body level so it overflows correctly
+                document.body.appendChild(dropdown);
                 var rect = btn.getBoundingClientRect();
+                dropdown.style.position = 'fixed';
                 dropdown.style.top = rect.top + 'px';
                 dropdown.style.left = (rect.right + 12) + 'px';
                 dropdown.style.display = 'block';
@@ -432,7 +411,7 @@
         document.addEventListener('click', function(e) {
             var btn = document.getElementById('notif-btn');
             var dropdown = document.getElementById('notif-dropdown');
-            if (btn && dropdown && !btn.contains(e.target)) {
+            if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.style.display = 'none';
             }
         });
@@ -440,70 +419,67 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="header">
-            <h1>Welcome, John Doe</h1>
-            <p class="date">{{ now()->format('D, d F Y') }}</p>
-        </div>
+        <h1 class="page-title">Performance History</h1>
 
-        <div class="profile-card">
+        <div class="card-container">
             <div class="card-header"></div>
             
-            <div class="profile-body">
-                <div class="profile-header">
-                    <div class="avatar">
-                        <img src="https://i.pravatar.cc/150?img=5" alt="Profile Picture">
-                    </div>
-                    <div class="profile-info">
-                        <h2>John Doe</h2>
-                        <p class="email">johnedoe@example.com</p>
-                    </div>
-                </div>
-
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="full_name">Full Name</label>
-                            <input type="text" id="full_name" name="full_name" value="John Doe" placeholder="Enter full name">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="birthday">Birthday</label>
-                            <input type="text" id="birthday" name="birthday" value="January 15, 1990" placeholder="Select birthday">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <input type="text" id="gender" name="gender" value="Male" placeholder="Select gender">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="address">Address</label>
-                            <input type="text" id="address" name="address" value="123 Main Street, Davao City" placeholder="Enter address">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="region">Region</label>
-                            <input type="text" id="region" name="region" value="Region XI (Davao)" placeholder="Enter region">
-                        </div>
+            <div class="card-body">
+                <!-- Filter Section -->
+                <form action="{{ route('performance.index') }}" method="GET" class="filter-section">
+                    <div class="filter-group">
+                        <label class="filter-label">Semester</label>
+                        <select name="semester" class="filter-select" onchange="this.form.submit()">
+                            <option value="all" {{ $selectedSemester == 'all' ? 'selected' : '' }}>All Semesters</option>
+                            <option value="first" {{ $selectedSemester == 'first' ? 'selected' : '' }}>First</option>
+                            <option value="second" {{ $selectedSemester == 'second' ? 'selected' : '' }}>Second</option>
+                        </select>
                     </div>
 
-                    <div class="email-section">
-                        <div class="email-item">
-                            <span class="email-text">johnedoe@example.com</span>
-                            <span class="email-remove">remove</span>
-                        </div>
-
-                        <button type="button" class="btn-add-email">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Add Email Address
-                        </button>
+                    <div class="filter-group">
+                        <label class="filter-label">Year</label>
+                        <select name="year" class="filter-select" onchange="this.form.submit()">
+                            @for($y = 2024; $y <= 2030; $y++)
+                                <option value="{{ $y }}" {{ $selectedYear == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
                     </div>
+
+                    <a href="{{ route('performance.download', ['semester' => $selectedSemester, 'year' => $selectedYear]) }}" class="download-report-btn">
+                        <svg class="download-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download Report
+                    </a>
                 </form>
+
+                <!-- Data Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Semester</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($performances as $performance)
+                                <tr>
+                                    <td>{{ $performance->date }}</td>
+                                    <td>{{ $performance->semester }}</td>
+                                    <td>
+                                        <a href="{{ route('performance.show', $performance->id) }}" class="view-link">View</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="empty-state">No performance records found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>

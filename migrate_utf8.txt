@@ -1,0 +1,53 @@
+﻿php : PHP Warning:  
+PHP Startup: Unable to 
+load dynamic library 
+'pdo_firebird' (tried: 
+ext\pdo_firebird (The 
+specified module could 
+not be found), ext\php_
+pdo_firebird.dll (The 
+specified module could 
+not be found)) in 
+Unknown on line 0
+At line:1 char:1
++ php artisan migrate 
+> migrate_out.txt 2>&1 
+; type migrate_out.txt
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (PHP Warning:    
+  P...known on line    
+ 0:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+   INFO  Running migrations.  
+
+  2024_01_01_000003_add_fields_to_users_table  9.73ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'users' already exists (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: laravel, SQL: create table `users` (`id` bigint unsigned not null auto_increment primary key, `firstname` varchar(255) not null, `lastname` varchar(255) not null, `name` varchar(255) not null, `employee_id` varchar(255) not null, `email` varchar(255) not null, `password` varchar(255) not null, `role` varchar(255) not null, `email_verified_at` timestamp null, `remember_token` varchar(100) null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:838
+    834Γûò             $exceptionType = $this->isUniqueConstraintError($e)
+    835Γûò                 ? UniqueConstraintViolationException::class
+    836Γûò                 : QueryException::class;
+    837Γûò 
+  Γ₧£ 838Γûò             throw new $exceptionType(
+    839Γûò                 $this->getNameWithReadWriteType(),
+    840Γûò                 $query,
+    841Γûò                 $this->prepareBindings($bindings),
+    842Γûò                 $e,
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'users' already exists")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+      PDOStatement::execute()
+

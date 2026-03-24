@@ -48,7 +48,11 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($ipcrfs as $ipcrf)
-                    <tr class="hover:bg-slate-50 transition-colors">
+                    <tr class="hover:bg-slate-50 transition-colors table-row" 
+                        data-province="{{ $ipcrf->province }}" 
+                        data-name="{{ $ipcrf->name }}" 
+                        data-municipality="{{ $ipcrf->municipality }}"
+                        data-status="{{ $ipcrf->status }}">
                         <td class="px-6 py-4 text-slate-500">#{{ str_pad($ipcrf->id, 5, '0', STR_PAD_LEFT) }}</td>
                         <td class="px-6 py-4 font-medium text-slate-900">{{ $ipcrf->name }}</td>
                         <td class="px-6 py-4 text-slate-500">{{ $ipcrf->municipality }}, {{ $ipcrf->province }}</td>
@@ -94,3 +98,114 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[placeholder="Search records..."]');
+    const provinceFilter = document.querySelector('select');
+    const exportButton = document.querySelector('button:has(i[data-lucide="download"])');
+    const tableRows = document.querySelectorAll('.table-row');
+    let dynamicEmptyState = null;
+
+    // Search functionality
+    function filterRecords() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedProvince = provinceFilter.value;
+        let visibleCount = 0;
+
+        tableRows.forEach(row => {
+            const name = row.dataset.name.toLowerCase();
+            const municipality = row.dataset.municipality.toLowerCase();
+            const province = row.dataset.province;
+            const status = row.dataset.status.toLowerCase();
+
+            const matchesSearch = !searchTerm || 
+                name.includes(searchTerm) || 
+                municipality.includes(searchTerm) || 
+                province.toLowerCase().includes(searchTerm) ||
+                status.includes(searchTerm);
+
+            const matchesProvince = !selectedProvince || province === selectedProvince;
+
+            if (matchesSearch && matchesProvince) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Show/hide dynamic empty state
+        const tbody = document.querySelector('tbody');
+        
+        // Remove any existing dynamic empty state
+        if (dynamicEmptyState) {
+            dynamicEmptyState.remove();
+            dynamicEmptyState = null;
+        }
+
+        // Show empty state only if there are dynamic rows hidden and no visible results
+        if (visibleCount === 0 && tableRows.length > 0) {
+            const newEmptyState = document.createElement('tr');
+            newEmptyState.className = 'dynamic-empty-state';
+            newEmptyState.innerHTML = `
+                <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                            <i data-lucide="search" class="w-6 h-6 text-slate-400"></i>
+                        </div>
+                        <p>No records match your search</p>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(newEmptyState);
+            dynamicEmptyState = newEmptyState;
+            lucide.createIcons();
+        }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterRecords);
+    provinceFilter.addEventListener('change', filterRecords);
+
+    // Export functionality
+    exportButton.addEventListener('click', function() {
+        const visibleRows = Array.from(tableRows).filter(row => row.style.display !== 'none');
+        
+        if (visibleRows.length === 0) {
+            alert('No records to export');
+            return;
+        }
+
+        // Create CSV content
+        let csvContent = 'ID,Employee Name,Location,Date Uploaded,Status\n';
+        
+        visibleRows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            const id = cells[0].textContent.trim();
+            const name = cells[1].textContent.trim();
+            const location = cells[2].textContent.trim();
+            const date = cells[3].textContent.trim();
+            const status = cells[4].textContent.trim();
+            
+            csvContent += `"${id}","${name}","${location}","${date}","${status}"\n`;
+        });
+
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'ipcrf_records.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+});
+</script>
+@endpush

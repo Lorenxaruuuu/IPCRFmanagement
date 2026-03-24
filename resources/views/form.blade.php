@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <title>DSWD - User Profile</title>
+    <title>Forms - DSWD Purchase Request Tracking System</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8f4f8 0%, #f0e6f6 50%, #ffe6e6 100%);
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e5ed 50%, #f0e6f0 100%);
             min-height: 100vh;
             display: flex;
         }
@@ -109,245 +109,167 @@
         .main-content {
             flex: 1;
             padding: 40px;
-            overflow-y: auto;
         }
 
-        .header {
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
             margin-bottom: 30px;
+            letter-spacing: 1px;
         }
 
-        .header h1 {
-            font-size: 28px;
-            color: #2d3748;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .header .date {
-            font-size: 14px;
-            color: #718096;
-        }
-
-        /* Profile Card */
-        .profile-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        /* Table Container */
+        .table-container {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        .card-header {
-            height: 120px;
-            background: linear-gradient(90deg, #a8edea 0%, #fed6e3 50%, #f5f7fa 100%);
-            position: relative;
-        }
-
-        .profile-body {
-            padding: 0 40px 40px;
-            position: relative;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: flex-end;
-            margin-top: -50px;
-            margin-bottom: 30px;
-        }
-
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid white;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            background: #f0f0f0;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            margin-left: 20px;
-            margin-bottom: 10px;
-        }
-
-        .profile-info h2 {
-            font-size: 22px;
-            color: #2d3748;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .profile-info .email {
-            font-size: 14px;
-            color: #718096;
-        }
-
-        /* Form Grid */
-        .form-grid {
+        /* Table Header with Gradient */
+        .table-header {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            color: #4a5568;
-            font-weight: 500;
-            margin-bottom: 8px;
-            text-transform: capitalize;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 12px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            grid-template-columns: 1fr 120px;
+            background: linear-gradient(90deg, #a8d0e6 0%, #f5e6d3 100%);
+            padding: 20px 30px;
+            font-weight: 600;
+            color: #333;
             font-size: 14px;
-            color: #2d3748;
-            background: #f7fafc;
-            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
+        /* Table Body */
+        .table-body {
             background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .form-group input::placeholder {
-            color: #a0aec0;
-        }
-
-        /* Email Section */
-        .email-section {
-            margin-top: 20px;
-            padding-top: 30px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .email-item {
-            display: flex;
-            justify-content: space-between;
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            padding: 18px 30px;
+            border-bottom: 1px solid #f0f0f0;
             align-items: center;
-            padding: 15px;
-            background: #f7fafc;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            transition: background-color 0.2s;
         }
 
-        .email-text {
-            font-size: 14px;
-            color: #2d3748;
+        .table-row:hover {
+            background-color: #fafafa;
         }
 
-        .email-remove {
-            font-size: 12px;
-            color: #e53e3e;
-            cursor: pointer;
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .form-name {
+            color: #333;
+            font-size: 15px;
             font-weight: 500;
-            transition: color 0.3s;
         }
 
-        .email-remove:hover {
-            color: #c53030;
-            text-decoration: underline;
+        /* Download Button */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #e8f0fe;
+            color: #1a73e8;
+            border: 1px solid #c6dafc;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-add-email {
+        .download-btn:hover {
+            background: #d2e3fc;
+            border-color: #aecbfa;
+        }
+
+        .download-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+
+        /* Success Message */
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Admin Actions */
+        .admin-actions {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 10px 20px;
-            background: #ebf8ff;
-            color: #3182ce;
+            background: #1a73e8;
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 500;
+            text-decoration: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
+            transition: background 0.2s;
         }
 
-        .btn-add-email:hover {
-            background: #bee3f8;
-            transform: translateY(-1px);
-        }
-
-        .btn-add-email svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-            }
-            
-            .main-content {
-                padding: 20px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .profile-header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .profile-info {
-                margin-left: 0;
-                margin-top: 15px;
-            }
+        .btn-primary:hover {
+            background: #1557b0;
         }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <aside class="sidebar">
-        <a href="{{ url('/home') }}" class="nav-item active"  title="Home">
+         <a href="{{ url('/home') }}" class="nav-item" title="Home">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
             </svg>
         </a>
-        <a href="{{ url('/forms') }}" class="nav-item" title="Dashboard">
+        <a href="{{ url('/forms') }}" class="nav-item active" title="Dashboard">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                 </svg>
         </a>
-           <a href="{{ url('/performance') }}" class="nav-item" title="Performance History">
+        <a href="{{ url('/performance') }}" class="nav-item" title="Performance History">
             <!-- example chart icon representing performance -->
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17l4-4 4 4 4-8"/>
             </svg>
         </a>
-        <a href="{{ url('/notifications2') }}" class="nav-item" title="Notifications" style="position:relative; text-decoration:none;">
+        <a href="{{ route('notifications.index') }}" class="nav-item" title="Notifications" style="position:relative; text-decoration:none;">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
             </svg>
+            @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
                 <span style="position:absolute; top:6px; right:6px; width:10px; height:10px; background:#ef4444; border-radius:50%; border:2px solid white;"></span>
+            @endif
         </a>
         <div class="nav-item" title="Settings">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -371,24 +293,30 @@
     <div id="notif-dropdown" style="display:none; position:fixed; width:300px; background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); border:1px solid #e5e7eb; overflow:hidden; z-index:99999; text-align:left;">
         <div style="padding:12px 14px; border-bottom:1px solid #e5e7eb; background:#f9fafb; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:13px; font-weight:600; color:#374151;">Announcements</span>
+            @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
                 <form action="{{ route('notifications.markAllAsRead') }}" method="POST" style="margin:0;">
                     @csrf
                     <button type="submit" style="font-size:11px; color:#2563eb; background:none; border:none; cursor:pointer;">Mark read</button>
                 </form>
+            @endif
         </div>
         <div style="max-height:320px; overflow-y:auto;">
-            <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
-                <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">System Announcement</p>
-                <p style="font-size:11px; color:#6b7280; margin:0;">New IPCRF form templates available</p>
-            </div>
-            <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
-                <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">Deadline Update</p>
-                <p style="font-size:11px; color:#6b7280; margin:0;">IPCRF submission deadline extended</p>
-            </div>
-            <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; opacity:0.6;">
-                <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">Welcome Notice</p>
-                <p style="font-size:11px; color:#6b7280; margin:0;">Welcome to DSWD IPCRF System</p>
-            </div>
+            @if(auth()->check() && auth()->user()->notifications->count() > 0)
+                @foreach(auth()->user()->unreadNotifications as $notification)
+                    <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
+                        <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">{{ $notification->data['subject'] ?? 'New Announcement' }}</p>
+                        <p style="font-size:11px; color:#6b7280; margin:0;">{{ Str::limit($notification->data['content'] ?? '', 80) }}</p>
+                    </div>
+                @endforeach
+                @foreach(auth()->user()->readNotifications->take(5) as $notification)
+                    <div style="padding:12px 14px; border-bottom:1px solid #f3f4f6; opacity:0.6;">
+                        <p style="font-size:13px; font-weight:600; color:#1f2937; margin:0 0 4px;">{{ $notification->data['subject'] ?? 'Announcement' }}</p>
+                        <p style="font-size:11px; color:#6b7280; margin:0;">{{ Str::limit($notification->data['content'] ?? '', 80) }}</p>
+                    </div>
+                @endforeach
+            @else
+                <div style="padding:24px; text-align:center; font-size:12px; color:#9ca3af;">No announcements yet</div>
+            @endif
         </div>
     </div>
 
@@ -440,70 +368,56 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="header">
-            <h1>Welcome, John Doe</h1>
-            <p class="date">{{ now()->format('D, d F Y') }}</p>
-        </div>
+        <h1 class="page-title">FORMS</h1>
 
-        <div class="profile-card">
-            <div class="card-header"></div>
-            
-            <div class="profile-body">
-                <div class="profile-header">
-                    <div class="avatar">
-                        <img src="https://i.pravatar.cc/150?img=5" alt="Profile Picture">
-                    </div>
-                    <div class="profile-info">
-                        <h2>John Doe</h2>
-                        <p class="email">johnedoe@example.com</p>
-                    </div>
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @auth
+            @if(auth()->user()->role === 'admin')
+                <div class="admin-actions">
+                    <a href="{{ route('forms.create') }}" class="btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Upload New Form
+                    </a>
                 </div>
+            @endif
+        @endauth
 
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="full_name">Full Name</label>
-                            <input type="text" id="full_name" name="full_name" value="John Doe" placeholder="Enter full name">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="birthday">Birthday</label>
-                            <input type="text" id="birthday" name="birthday" value="January 15, 1990" placeholder="Select birthday">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <input type="text" id="gender" name="gender" value="Male" placeholder="Select gender">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="address">Address</label>
-                            <input type="text" id="address" name="address" value="123 Main Street, Davao City" placeholder="Enter address">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="region">Region</label>
-                            <input type="text" id="region" name="region" value="Region XI (Davao)" placeholder="Enter region">
+        <div class="table-container">
+            <div class="table-header">
+                <span>Name</span>
+                <span style="text-align: center;">Action</span>
+            </div>
+            
+            <div class="table-body">
+                @forelse($forms as $index => $form)
+                    @php
+                        // data_get works with arrays and objects transparently
+                        $name = data_get($form, 'name');
+                        $formId = data_get($form, 'id');
+                    @endphp
+                    <div class="table-row">
+                        <span class="form-name">{{ $index + 1 }}. {{ $name }}</span>
+                        <div style="text-align: center;">
+                            <a href="{{ route('forms.download', $formId) }}" class="download-btn">
+                                Download
+                                <svg class="download-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                            </a>
                         </div>
                     </div>
-
-                    <div class="email-section">
-                        <div class="email-item">
-                            <span class="email-text">johnedoe@example.com</span>
-                            <span class="email-remove">remove</span>
-                        </div>
-
-                        <button type="button" class="btn-add-email">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Add Email Address
-                        </button>
+                @empty
+                    <div class="empty-state">
+                        <p>No forms available at the moment.</p>
                     </div>
-                </form>
+                @endforelse
             </div>
         </div>
     </main>

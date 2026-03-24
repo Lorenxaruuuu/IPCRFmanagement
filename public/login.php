@@ -56,7 +56,7 @@ try {
             $redirectUrl = '/encoder';
             break;
         case 'admin':
-            $redirectUrl = '/dashboard';
+            $redirectUrl = '/admins';
             break;
         case 'staff':
             $redirectUrl = '/home';
