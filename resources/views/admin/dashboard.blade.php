@@ -190,7 +190,7 @@
                         <button onclick="toggleNotifications()" id="notification-btn" class="relative p-2 text-gray-600 hover:text-gray-800 transition-colors">
                             <i class="fas fa-bell text-xl"></i>
                             @if($allNotifications->count() > 0)
-                                <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
+                                <span id="notification-badge" class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
                             @endif
                         </button>
 
@@ -227,7 +227,7 @@
                 <div id="view-dashboard" class="view-section fade-in">
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="glass-panel rounded-2xl p-6 card-hover border-l-4 border-blue-500">
+                        <div class="glass-panel rounded-2xl p-6 card-hover border-l-4 border-blue-500 cursor-pointer" onclick="showView('records')">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <p class="text-gray-500 text-sm mb-1">IPCRF Uploaded</p>
@@ -240,7 +240,7 @@
                             </div>
                         </div>
                         
-                        <div class="glass-panel rounded-2xl p-6 card-hover border-l-4 border-green-500">
+                        <div class="glass-panel rounded-2xl p-6 card-hover border-l-4 border-green-500 cursor-pointer" onclick="showView('forms')">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <p class="text-gray-500 text-sm mb-1">Active Forms</p>
@@ -252,7 +252,7 @@
                             </div>
                         </div>
                         
-                        <div class="glass-panel rounded-2xl p-6 card-hover border-l-4 border-orange-500">
+                        <div class="glass-panel rounded-2xl p-6 card-hover border-l-4 border-orange-500 cursor-pointer" onclick="showView('notices')">
                             <div class="flex justify-between items-start">
                                 <div>
                                     <p class="text-gray-500 text-sm mb-1">Notices</p>
@@ -500,21 +500,46 @@
                             
                             <div class="bg-gray-50 rounded-lg p-4 max-w-md mx-auto mb-6 text-left">
                                 <div class="flex justify-between py-2 border-b border-gray-200">
-                                    <span class="text-gray-600">Employee:</span>
-                                    <span class="font-medium">Juan Dela Cruz</span>
+                                    <span class="text-gray-600">Employee Name:</span>
+                                    <span class="font-medium">Loading...</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Employee ID:</span>
+                                    <span class="font-medium">—</span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200">
                                     <span class="text-gray-600">Role:</span>
                                     <span class="font-medium" id="confirm-role">Teacher</span>
                                 </div>
                                 <div class="flex justify-between py-2 border-b border-gray-200">
-                                    <span class="text-gray-600">Region:</span>
-                                    <span class="font-medium">Davao City</span>
+                                    <span class="text-gray-600">Province:</span>
+                                    <span class="font-medium">—</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Municipality:</span>
+                                    <span class="font-medium">—</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">School:</span>
+                                    <span class="font-medium">—</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Semester:</span>
+                                    <span class="font-medium">—</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">School Year:</span>
+                                    <span class="font-medium">—</span>
                                 </div>
                                 <div class="flex justify-between py-2">
                                     <span class="text-gray-600">Status:</span>
-                                    <span class="status-badge bg-green-100 text-green-700">Saved to Drive</span>
+                                    <span class="status-badge bg-green-100 text-green-700">Successfully Uploaded</span>
                                 </div>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm text-blue-700">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Redirecting to dashboard in <span id="countdown">3</span> seconds...
                             </div>
                             
                             <div class="flex gap-4 justify-center">
@@ -711,33 +736,37 @@
                             <h3 class="text-xl font-bold mb-1">Upload New Form</h3>
                             <p class="text-sm text-gray-500 mb-6">Add documents for encoders to download</p>
                             
-                            <form class="space-y-4">
+                            <form method="POST" action="{{ route('admin.forms.store') }}" enctype="multipart/form-data" class="space-y-4">
+                                @csrf
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Form Title</label>
-                                    <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="e.g., IPCRF Template 2025">
+                                    <input type="text" name="title" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="e.g., IPCRF Template 2025">
                                 </div>
                                 
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Category</label>
-                                    <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500">
-                                        <option>Template</option>
-                                        <option>Guidelines</option>
-                                        <option>Reference</option>
+                                    <select name="category" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500">
+                                        <option value="Template">Template</option>
+                                        <option value="Guidelines">Guidelines</option>
+                                        <option value="Reference">Reference</option>
                                     </select>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1 uppercase">Description</label>
-                                    <textarea rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Briefly describe the form..."></textarea>
+                                    <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Briefly describe the form..."></textarea>
                                 </div>
                                 
-                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 transition cursor-pointer bg-gray-50">
-                                    <i class="fas fa-file-upload text-3xl text-gray-400 mb-2"></i>
-                                    <p class="text-sm text-gray-600">Click to upload or drag and drop</p>
-                                    <p class="text-xs text-gray-400">PDF, DOC, XLS files</p>
-                                </div>
+                                <label class="block cursor-pointer">
+                                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 transition bg-gray-50">
+                                        <i class="fas fa-file-upload text-3xl text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-600 file-name-display">Click to upload or drag and drop</p>
+                                        <p class="text-xs text-gray-400">PDF, DOC, XLS files</p>
+                                        <input type="file" name="file" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx" required onchange="this.parentElement.querySelector('.file-name-display').textContent = this.files[0].name">
+                                    </div>
+                                </label>
                                 
-                                <button type="button" class="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-medium">
+                                <button type="submit" class="w-full bg-blue-900 text-white py-3 rounded-lg hover:bg-blue-800 transition font-medium">
                                     Publish Form
                                 </button>
                             </form>
@@ -748,47 +777,46 @@
                             <h3 class="text-xl font-bold mb-6">Published Forms</h3>
                             
                             <div class="space-y-4">
+                                @forelse($forms as $form)
                                 <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
                                     <div class="flex justify-between items-start mb-3">
                                         <div class="flex items-center gap-3">
                                             <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                                <i class="fas fa-file-alt text-gray-600 text-xl"></i>
+                                                <i class="fas {{ str_contains(strtolower($form->file_name ?? ''), 'pdf') ? 'fa-file-pdf' : (str_contains(strtolower($form->file_name ?? ''), 'xl') ? 'fa-file-excel' : 'fa-file-alt') }} text-gray-600 text-xl"></i>
                                             </div>
                                             <div>
-                                                <span class="inline-block px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded mb-1">Template</span>
-                                                <h4 class="font-bold text-gray-800">IPCRF Template 2024</h4>
-                                                <p class="text-xs text-gray-500">Official template for 2024 encoding</p>
+                                                @php
+                                                    $bgClass = 'bg-gray-200 text-gray-700';
+                                                    if($form->category == 'Guidelines') $bgClass = 'bg-blue-100 text-blue-700';
+                                                    elseif($form->category == 'Reference') $bgClass = 'bg-green-100 text-green-700';
+                                                @endphp
+                                                <span class="inline-block px-2 py-1 {{ $bgClass }} text-xs rounded mb-1">{{ $form->category }}</span>
+                                                <h4 class="font-bold text-gray-800">{{ $form->title }}</h4>
+                                                <p class="text-xs text-gray-500">{{ Str::limit($form->description, 60) }}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                                        <span class="text-xs text-gray-500">25/02/2026</span>
-                                        <button class="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                                <i class="fas fa-file-pdf text-gray-600 text-xl"></i>
-                                            </div>
-                                            <div>
-                                                <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded mb-1">Guidelines</span>
-                                                <h4 class="font-bold text-gray-800">Encoding Guidelines</h4>
-                                                <p class="text-xs text-gray-500">Step-by-step guide for encoders</p>
-                                            </div>
+                                        <span class="text-xs text-gray-500">{{ $form->published_at ? $form->published_at->format('d/m/Y') : 'N/A' }}</span>
+                                        <div class="flex gap-4">
+                                            <form action="{{ route('admin.forms.destroy', $form->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this form?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 text-sm font-medium hover:underline flex items-center gap-1">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                            <a href="{{ route('admin.forms.download', $form->id) }}" class="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
                                         </div>
                                     </div>
-                                    <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                                        <span class="text-xs text-gray-500">20/02/2026</span>
-                                        <button class="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
-                                            <i class="fas fa-download"></i> Download
-                                        </button>
-                                    </div>
                                 </div>
+                                @empty
+                                <div class="text-center py-6 text-gray-500 text-sm">
+                                    No forms published yet.
+                                </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -873,6 +901,7 @@
     <script>
         let currentStep = 1;
         let selectedRole = '';
+        let uploadFormData = {}; // Store form data for confirmation
 
         function showView(viewName) {
             // Hide all views
@@ -936,6 +965,22 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
 
             const formData = new FormData(form);
+            
+            // Store form data for confirmation display
+            uploadFormData = {
+                employee_name: form.querySelector('[name="employee_name"]').value,
+                employee_id: form.querySelector('[name="employee_id"]').value,
+                role: form.querySelector('[name="role"]').value,
+                province_id: form.querySelector('[name="province_id"]').value,
+                municipality_id: form.querySelector('[name="municipality_id"]').value,
+                school_id: form.querySelector('[name="school_id"]').value,
+                semester: form.querySelector('[name="semester"]').value,
+                school_year: form.querySelector('[name="school_year"]').value,
+                // Get display names
+                province_name: document.querySelector('[name="province_id"] option:checked').textContent,
+                municipality_name: document.querySelector('[name="municipality_id"] option:checked').textContent,
+                school_name: document.querySelector('[name="school_id"] option:checked').textContent
+            };
 
             fetch('/api/upload.php', {
                 method: 'POST',
@@ -944,11 +989,25 @@
             .then(res => res.json())
             .then(response => {
                 if (response.success) {
+                    // Check if there's a warning about Google Drive upload
+                    if (response.warning) {
+                        // Show warning but still show confirmation
+                        showAlert('⚠️ Partial Upload', response.message || 'File saved but Google Drive upload failed', 'warning');
+                    }
+                    
+                    // Update confirmation display with actual data
+                    displayConfirmationData(response.data);
+                    
                     // show confirmation step directly without re‑submitting
                     document.getElementById('upload-step-2').classList.add('hidden');
                     document.getElementById('upload-step-3').classList.remove('hidden');
                     currentStep = 3;
                     updateStepIndicator();
+                    
+                    // Auto-refresh page after 3 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
                 } else {
                     showAlert('Upload Failed', response.error || 'An error occurred', 'warning');
                     submitBtn.disabled = false;
@@ -961,6 +1020,60 @@
                 submitBtn.innerHTML = btnText;
             });
         }
+        
+        function displayConfirmationData(apiData) {
+            // Update confirmation fields with actual data
+            const confirmContent = document.querySelector('#upload-step-3 .bg-gray-50');
+            if (confirmContent) {
+                confirmContent.innerHTML = `
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">Employee Name:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.employee_name)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">Employee ID:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.employee_id)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">Role:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.role)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">Province:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.province_name)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">Municipality:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.municipality_name)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">School:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.school_name)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">Semester:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.semester)}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-200">
+                        <span class="text-gray-600">School Year:</span>
+                        <span class="font-medium">${escapeHtml(uploadFormData.school_year)}</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="status-badge bg-green-100 text-green-700">Successfully Uploaded</span>
+                    </div>
+                `;
+            }
+            
+            // Start countdown timer
+            startCountdown();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         function prevStep() {
             if (currentStep > 1) {
@@ -969,6 +1082,22 @@
                 document.getElementById(`upload-step-${currentStep}`).classList.remove('hidden');
                 updateStepIndicator();
             }
+        }
+        
+        function startCountdown() {
+            let count = 3;
+            const countdownEl = document.getElementById('countdown');
+            
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (countdownEl) {
+                    countdownEl.textContent = count;
+                }
+                
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
         }
 
         function updateStepIndicator() {
@@ -1212,6 +1341,12 @@
             const dropdown = document.getElementById('notification-dropdown');
             if (!dropdown) return;
             dropdown.classList.toggle('hidden');
+            
+            // Hide the red notification badge when clicked
+            const badge = document.getElementById('notification-badge');
+            if (badge) {
+                badge.classList.add('hidden');
+            }
         }
 
         // Close notifications dropdown when clicking outside

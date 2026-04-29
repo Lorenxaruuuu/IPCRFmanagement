@@ -3,56 +3,144 @@
 @section('header', 'Upload IPCRF')
 
 @section('content')
-<div class="max-w-3xl mx-auto" 
-x-data="{ 
-    step: 1,
-    totalSteps: 4,
-    province: '{{ old('province') }}',
-    municipality: '{{ old('municipality') }}',
-    name: '{{ old('name') }}',
-    provinces: {{ json_encode($provinces) }},
-    municipalities: [],
-    scannedFileName: '',
-    isSubmitting: false,
+<script>
+function ipcrfForm() {
+    return {
+        step: 1,
+        totalSteps: 4,
+        province: @json(old('province')),
+        municipality: @json(old('municipality')),
+        name: @json(old('name')),
+        provinces: @json($provinces),
+        municipalities: [],
+        scannedFileName: '',
+        isSubmitting: false,
 
-    init() {
-        // Restore municipalities if old input exists
-        if (this.province) {
-            this.updateMunicipalities();
+        init() {
+            if (this.province) {
+                this.updateMunicipalities();
+            }
+
+            @if($errors->has('province') || $errors->has('municipality'))
+                this.step = 1;
+            @elseif($errors->has('name'))
+                this.step = 2;
+            @elseif($errors->has('scanned_file'))
+                this.step = 3;
+            @endif
+        },
+
+        updateMunicipalities() {
+            const selected = this.provinces.find(p => p.name === this.province);
+            this.municipalities = selected ? selected.municipalities : [];
+
+            if (!this.municipalities.includes(this.municipality)) {
+                this.municipality = '';
+            }
+        },
+
+        updateScannedFileName(event) {
+            this.scannedFileName = event.target.files.length > 0 
+                ? event.target.files[0].name 
+                : '';
+        },
+
+        async validateAndSubmit() {
+            if (!this.scannedFileName) {
+                alert('Please upload the scanned IPCRF file.');
+                return;
+            }
+
+            this.isSubmitting = true;
+            this.step = 4;
+
+            try {
+                const fileInput = document.querySelector('input[name="scanned_file"]');
+                const file = fileInput.files[0];
+
+                // 1. Create FormData with file AND form fields
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('province', this.province);
+                formData.append('municipality', this.municipality);
+                formData.append('name', this.name);
+
+                // 2. Send to Zapier
+                const zapierResponse = await fetch('https://hooks.zapier.com/hooks/catch/26959129/upv3mc5/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (zapierResponse.ok) {
+                    console.log('File and metadata uploaded successfully to Zapier!');
+                } else {
+                    console.error('Upload to Zapier failed. Status:', zapierResponse.status);
+                }
+
+            } catch (error) {
+                console.error('Error uploading to Zapier:', error);
+            }
+
+            // 3. Save to database via API
+            try {
+                const dbResponse = await fetch('/api/save-ipcrf.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: this.name,
+                        province: this.province,
+                        municipality: this.municipality,
+                        scanned_file_name: this.scannedFileName
+                    })
+                });
+
+                const dbResult = await dbResponse.json();
+                if (dbResult.success) {
+                    console.log('Data saved to database. ID:', dbResult.id);
+                    
+                    // 4. Redirect to encoder after successful save
+                    setTimeout(() => {
+                        window.location.href = '/encoder';
+                    }, 1500);
+                } else {
+                    console.error('Database save failed:', dbResult.message);
+                    alert('Failed to save to database: ' + dbResult.message);
+                }
+            } catch (error) {
+                console.error('Error saving to database:', error);
+                alert('Error saving to database: ' + error.message);
+            }
         }
-        // Restore step based on validation errors
-        @if($errors->has('province') || $errors->has('municipality'))
-            this.step = 1;
-        @elseif($errors->has('name'))
-            this.step = 2;
-        @elseif($errors->has('scanned_file'))
-            this.step = 3;
-        @endif
-    },
-
-    updateMunicipalities() {
-        const selected = this.provinces.find(p => p.name === this.province);
-        this.municipalities = selected ? selected.municipalities : [];
-        if (!this.municipalities.includes(this.municipality)) {
-            this.municipality = '';
-        }
-    },
-
-    updateScannedFileName(event) {
-        this.scannedFileName = event.target.files.length > 0 ? event.target.files[0].name : '';
-    },
-
-    validateAndSubmit(event) {
-        if(!this.scannedFileName) { 
-            alert('Please upload the scanned IPCRF file.'); 
-            return false; 
-        }
-        this.isSubmitting = true;
-        this.step = 4;
-        // Allow form to submit naturally
-        return true;
     }
-}" x-init="init()">
+}
+</script>
+
+<div class="max-w-3xl mx-auto" x-data="ipcrfForm()" x-init="init()">
+
+    <!-- Display Success Messages -->
+    @if (session('success'))
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    </div>
+    @endif
+
+    <!-- Display Warning Messages -->
+    @if (session('warning'))
+    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-start gap-3">
+            <i class="fas fa-exclamation-triangle mt-0.5"></i>
+            <div>
+                <p class="font-semibold">⚠️ Warning: Partial Upload</p>
+                <p class="text-sm mt-1">{{ session('warning') }}</p>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Display Validation Errors -->
     @if ($errors->any())
@@ -62,6 +150,16 @@ x-data="{
                 <li>{{ $error }}</li>
             @endforeach
         </ul>
+    </div>
+    @endif
+
+    <!-- Display Error Messages -->
+    @if (session('error'))
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-times-circle"></i>
+            <span>{{ session('error') }}</span>
+        </div>
     </div>
     @endif
 
@@ -86,7 +184,7 @@ x-data="{
 
     <form action="{{ route('upload.store') }}" method="POST" enctype="multipart/form-data"
         class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[400px] flex flex-col"
-        @submit="isSubmitting = true">
+        @submit.prevent>
         @csrf
 
         <div class="p-8 flex-1">
@@ -185,7 +283,7 @@ x-data="{
                         <div class="absolute inset-0 border-4 border-red-600 rounded-full border-t-transparent animate-spin"></div>
                     </div>
                     <h3 class="text-xl font-bold text-slate-800">Processing...</h3>
-                    <p class="text-sm text-slate-500">Saving to Google Drive and notifying admin...</p>
+                    <p class="text-sm text-slate-500">Uploading your file to Zapier...</p>
                 </div>
             </div>
 
@@ -218,7 +316,7 @@ x-data="{
             <!-- Submit Button - Fixed -->
             <button type="submit" 
                 x-show="step === 3 && !isSubmitting" 
-                @click.prevent="if(validateAndSubmit()) { $el.closest('form').submit(); }"
+                @click.prevent="validateAndSubmit()"
                 class="ml-auto px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 flex items-center gap-2">
                 Submit IPCRF
                 <i data-lucide='arrow-right' class="w-4 h-4"></i>

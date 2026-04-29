@@ -19,7 +19,9 @@ class IpcrfRecord extends Model
         'status',
         'remarks',
         'uploaded_at',
-        'role'
+        'role',
+        'google_drive_file_id',
+        'google_drive_link'
     ];
 
     protected $casts = [

@@ -8,6 +8,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Admin\NoticeController;
 use App\Http\Admin\FormController;
+use App\Http\Controllers\GoogleDriveAuthController;
 
 Route::get('/admins', function () {
     return redirect()->route('admin.dashboard');
@@ -66,11 +67,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     // Forms
     Route::get('/forms', [FormController::class, 'index'])->name('forms');
-    Route::post('/forms', [FormController::class, 'store2'])->name('forms.store');
+    Route::post('/forms', [FormController::class, 'store'])->name('forms.store');
 
     Route::get('/forms/{id}/download', [FormController::class, 'download2'])->name('forms.download');
     Route::delete('/forms/{id}', [FormController::class, 'destroy'])->name('forms.destroy');
+    
+    // Google Drive Authorization
+    Route::get('/settings/google-drive/authorize', [GoogleDriveAuthController::class, 'authorize'])->name('gdrive.authorize');
 });
+
+// Google Drive OAuth Callback (outside admin group)
+Route::get('/auth/google/callback', [GoogleDriveAuthController::class, 'callback'])->name('gdrive.callback');
 
 Route::post('/notifications/mark-all-read', function () {
     DB::table('notifications')

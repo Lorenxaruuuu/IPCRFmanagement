@@ -35,6 +35,9 @@ class FormController extends Controller
             'category' => $validated['category'],
             'description' => $validated['description'],
             'file_path' => $path,
+            'file_name' => $file->getClientOriginalName(),
+            'file_type' => $file->getClientOriginalExtension(),
+            'file_size' => $file->getSize(),
             'uploaded_by' => auth()->id() ?? 1,
             'published_at' => now(),
         ]);

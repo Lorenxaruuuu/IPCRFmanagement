@@ -17,6 +17,8 @@ class Ipcrf extends Model
         'municipality',
         'evaluated_file_path',
         'scanned_file_path',
-        'status'
+        'status',
+        'google_drive_file_id',
+        'google_drive_link'
     ];
 }

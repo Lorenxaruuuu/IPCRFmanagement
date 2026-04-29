@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'google_drive' => [
+        'folder_id' => env('GOOGLE_DRIVE_FOLDER_ID', null),
+        'enable_upload' => env('GOOGLE_DRIVE_ENABLE', true),
+    ],
+
+    'zapier' => [
+        'webhook_url' => env('ZAPIER_WEBHOOK_URL', 'https://hooks.zapier.com/hooks/catch/26959129/upv3mc5/'),
+    ],
+
 ];
